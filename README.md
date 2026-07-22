@@ -40,5 +40,14 @@ The documentation in this repository is divided into specific domains. Please re
 * `/governance` - Team topologies, multi-tenancy isolation, contract lifecycle (OAS/AsyncAPI), and RBAC identity models.
 * `/operations` - Observability standards, incident response (YBIYRI), disaster recovery, and state management.
 
+### Current delivery decisions (2026-07)
+
+* [Deployment & packaging model (ADR)](docs/architecture/13-deployment-and-packaging-model.md) — self-managed + private release artifacts
+* [`platform.yaml` contract](docs/operations/platform-yaml.schema.md)
+* [Client install permission matrix](docs/operations/01-client-install-permission-matrix.md)
+* [Phase 1 operator console map (no Backstage)](docs/operations/04-phase1-operator-console-map.md)
+
+Camel golden-path template (local Compose): `platform-iac-core/templates/quarkus-camel-app/`
+
 ---
 *This repository serves as the definitive architectural blueprint. For implementation details, please refer to the specific Layer Standards within the documentation directories.*
