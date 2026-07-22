@@ -1,0 +1,97 @@
+flowchart TD
+    %% Define Styles
+    classDef tierA fill:#2C3E50,stroke:#34495E,stroke-width:2px,color:#FFF;
+    classDef tierB fill:#D35400,stroke:#E67E22,stroke-width:2px,color:#FFF;
+    classDef tierC fill:#27AE60,stroke:#2ECC71,stroke-width:2px,color:#FFF;
+    classDef external fill:#7F8C8D,stroke:#95A5A6,stroke-width:2px,color:#FFF,stroke-dasharray: 5 5;
+
+    %% Client Actors
+    Client["External Clients / B2B"]:::external
+    Dev["Domain Developers"]:::external
+
+    subgraph Platform["NeutrOS: Composable Architecture Boundaries"]
+
+        %% Tier A: Control Plane (Non-Negotiable Core)
+        subgraph TierA["Tier A: Control Plane (Non-Negotiable Core - 80% Rule)"]
+            direction LR
+            subgraph Experience["Experience Layer"]
+                DevPortal["Developer Portal & API Catalog<br>Backstage.io"]:::tierA
+            end
+            
+            subgraph Auto["Automation & Delivery Layer"]
+                GitOps["GitOps Controller<br>ArgoCD"]:::tierA
+                CI["CI/CD Quality Gates<br>GitHub Actions / Tekton"]:::tierA
+            end
+            
+            subgraph Obs["Observability Layer"]
+                OTel["Telemetry Collector<br>OpenTelemetry"]:::tierA
+                MetricsLogsTraces["Metrics, Logs & Traces<br>Prometheus, Loki, Tempo"]:::tierA
+            end
+        end
+
+        %% Tier B: Replaceable Infrastructure (Component Swap)
+        subgraph TierB["Tier B: Replaceable Infrastructure (Component Swap - 20% Rule)"]
+            direction TB
+            subgraph EdgeSec["Edge & Security Layer"]
+                Gateway["API Gateway & Edge AI Routing<br>Apache APISIX / Kong"]:::tierB
+                IAM["Identity, SSO & RBAC<br>Keycloak"]:::tierB
+                Vault["Secrets Management<br>HashiCorp Vault"]:::tierB
+            end
+
+            subgraph DataInfra["Data & Event Infrastructure"]
+                Broker["Event & Messaging Backbone<br>Apache Kafka / RabbitMQ"]:::tierB
+                DBs["Persistence & State<br>PostgreSQL, Redis, MinIO"]:::tierB
+                VectorDB["Vector Database for RAG<br>Milvus / Qdrant"]:::tierB
+            end
+            
+            subgraph OpsInfra["Operational Infrastructure"]
+                Registry["Immutable Container Registry<br>Harbor (CVE Scanning)"]:::tierB
+                LLM["AI Services Engine<br>Local OSS LLMs / vLLM / Ollama"]:::tierB
+            end
+        end
+
+        %% Tier C: Data Plane (Customer Execution)
+        subgraph TierC["Tier C: Data Plane (Customer-Owned Business Logic)"]
+            direction LR
+            IntEngine["Integration Layer<br>Apache Camel<br>(Thin Routes, Routing, RAG Ingestion)"]:::tierC
+            ProcEngine["Processing Layer<br>Quarkus + LangChain4j<br>(Agentic Workflows, Complex Logic)"]:::tierC
+        end
+    end
+
+    %% --- Relationships and Flow ---
+
+    %% External Traffic
+    Client == "HTTPS/gRPC" ==> Gateway
+    Dev -. "OAS/AsyncAPI Discovery" .-> DevPortal
+    Dev -. "Git Push" .-> CI
+
+    %% Gateway Routing
+    Gateway == "Validates Token" ==> IAM
+    Gateway == "Routes Traffic" ==> IntEngine
+    Gateway == "Routes Traffic" ==> ProcEngine
+
+    %% Execution Engine Connections
+    IntEngine <--> Broker
+    ProcEngine <--> Broker
+    
+    IntEngine <--> DBs
+    IntEngine == "Embed & Sink" ==> VectorDB
+    
+    ProcEngine <--> DBs
+    ProcEngine == "Semantic Search" ==> VectorDB
+    ProcEngine == "Governed Prompting" ==> LLM
+
+    %% Security & Secrets Injection
+    Vault -. "Injects Secrets" .-> IntEngine
+    Vault -. "Injects Secrets" .-> ProcEngine
+
+    %% Delivery Flow
+    CI -. "Push Image" .-> Registry
+    GitOps -. "Pulls Config" .-> CI
+    GitOps -. "Deploys Manifests" .-> TierC
+    GitOps -. "Configures Routes" .-> Gateway
+
+    %% Telemetry Collection (Global)
+    TierB -. "Emits Telemetry" .-> OTel
+    TierC -. "Emits Telemetry" .-> OTel
+    OTel --> MetricsLogsTraces
