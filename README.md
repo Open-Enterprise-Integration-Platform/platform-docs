@@ -1,3 +1,4 @@
+![Open Enterprise Integration Platform Banner](oeip-diagram-full.png)
 # Open Enterprise Integration Platform
 
 **Enterprise Integration Without Vendor Lock-In.** This repository contains the architecture, governance, and delivery standards for a complete, ready-to-deploy **Productized Enterprise Integration Operating Model**. The Platform is designed as an open, composable alternative to traditional, closed iPaaS/ESB solutions (such as MuleSoft, Boomi, or TIBCO).
