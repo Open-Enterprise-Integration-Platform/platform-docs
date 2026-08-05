@@ -50,7 +50,7 @@ Standing up a new instance of the Platform requires a strict, sequential pipelin
   3. **Identity Layer:** Keycloak (connecting to the Phase 2 Postgres database).
   4. **Edge Layer:** Apache APISIX and Ingress Controllers.
 
-### Phase 5: The Golden Path Injection (Day-2)
+### Phase 5: The Golden Path Injection (ongoing delivery)
 * **Tool:** CI/CD Automation
 * **Actions:** 1. Instantiate the "Template Repositories" for the client.
   2. Provision the initial Domain Namespaces in Kubernetes (e.g., `platform-finance-prod`).
